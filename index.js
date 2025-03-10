@@ -4,9 +4,7 @@ const cors = require("cors")
 const bodyParser = require("body-parser")
 const app = express()
 
-
 require('dotenv').config();
-
 // Middleware
 app.use(cors())
 app.use(bodyParser.json())
@@ -239,9 +237,31 @@ app.delete("/api/admin/markets/:id", authenticateToken, async (req, res) => {
 // Public API for fetching markets
 app.get("/api/markets", async (req, res) => {
   try {
-    const markets = await Market.find().sort({ createdAt: -1 }).limit(10)
+    const page = Number.parseInt(req.query.page) || 1
+    const limit = Number.parseInt(req.query.limit) || 20
+    const skip = (page - 1) * limit
 
-    return res.status(200).json(markets)
+    // Add search and category filters if provided
+    const query = {}
+    if (req.query.search) {
+      query.title = { $regex: req.query.search, $options: "i" }
+    }
+    if (req.query.category && req.query.category !== "all") {
+      query.category = req.query.category
+    }
+
+    // Get total count for pagination
+    const total = await Market.countDocuments(query)
+
+    // Get markets with pagination
+    const markets = await Market.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit)
+
+    return res.status(200).json({
+      markets,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    })
   } catch (error) {
     console.error("Error fetching markets:", error)
     return res.status(500).json({ message: "Error fetching markets" })
@@ -262,16 +282,6 @@ app.get("/api/markets/:id", async (req, res) => {
     return res.status(500).json({ message: "Error fetching market" })
   }
 })
-
-// // Serve static files in production
-// if (process.env.NODE_ENV === "production") {
-//   const path = require("path")
-//   app.use(express.static(path.resolve(__dirname, "../dist")))
-
-//   app.get("*", (req, res) => {
-//     res.sendFile(path.resolve(__dirname, "../dist", "index.html"))
-//   })
-// }
 
 // Start server
 app.listen(PORT, () => {

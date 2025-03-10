@@ -3,14 +3,17 @@ const mongoose = require("mongoose")
 const cors = require("cors")
 const bodyParser = require("body-parser")
 const app = express()
-const PORT = process.env.PORT || 5000
+
+
+require('dotenv').config();
 
 // Middleware
 app.use(cors())
 app.use(bodyParser.json())
 
 // MongoDB connection - use environment variable in production
-const MONGODB_URI = "mongodb+srv://helloworldabaa:ULw4tqFta92Mba4@cluster0.dq5ts.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+const PORT = process.env.PORT;
+const MONGODB_URI = process.env.MONGO_URI;
 
 mongoose
   .connect(MONGODB_URI)

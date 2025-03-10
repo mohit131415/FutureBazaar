@@ -2,7 +2,6 @@
 
 // MongoDB insertion query for 50 prediction market questions
 
-
 const { MongoClient } = require('mongodb');
 
 

@@ -263,15 +263,15 @@ app.get("/api/markets/:id", async (req, res) => {
   }
 })
 
-// Serve static files in production
-if (process.env.NODE_ENV === "production") {
-  const path = require("path")
-  app.use(express.static(path.resolve(__dirname, "../dist")))
+// // Serve static files in production
+// if (process.env.NODE_ENV === "production") {
+//   const path = require("path")
+//   app.use(express.static(path.resolve(__dirname, "../dist")))
 
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "../dist", "index.html"))
-  })
-}
+//   app.get("*", (req, res) => {
+//     res.sendFile(path.resolve(__dirname, "../dist", "index.html"))
+//   })
+// }
 
 // Start server
 app.listen(PORT, () => {
